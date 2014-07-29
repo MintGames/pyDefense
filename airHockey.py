@@ -32,6 +32,6 @@ while running:
 	pygame.draw.line(screen, red, (100, 700), (100, 200), 5)
 
 	pygame.draw.arc(screen, red, ((100, 100), (200, 200)), (math.pi / 2), (math.pi), 5)
-	pygame.draw.arc(screen, red, ((500, 100), (500, 200)), (3 * math.pi / 2), (math.pi), 5)
+	pygame.draw.arc(screen, red, ((500, 100), (500, 200)), (math.pi / 2), (math.pi), 5)
 
 	pygame.display.flip()
