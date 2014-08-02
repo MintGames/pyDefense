@@ -1,8 +1,7 @@
 ''' TODO:
-Make so missiles despawn off map instead of destination
-Make creeps travel with A*
-Gives creeps health bars
-Make missile take off health when contact
+
+Make creeps travel with A* algorithm
+
 '''
 
 import pygame
@@ -32,15 +31,43 @@ class Creep:
         self.currentPosY = self.startPosY
         self.rect = pygame.Rect(self.startPosX, self.startPosY, self.endPosX, self.endPosY)
         self.health = 100
+        self.stageOfPath = 0
+        self.path = [(500,600), (400,100), (200,100), (60, 800), (700, 90)]
+        self.speed = 1
+        self.targetDestination()
 
     def attacked(self, damage):
         self.health -= damage
 
-    def update(self):
-        self.currentPosX += 0.1
+    def targetDestination(self):
+        self.endPosX, self.endPosY = self.path[self.stageOfPath]
+        if self.endPosX < self.currentPosX:
+            self.direction = -1
+        else:
+            self.direction = 1
+        self.gradient = (self.currentPosY - self.endPosY) / float((self.currentPosX - self.endPosX))
+        self.targetDestinationRect = pygame.Rect(self.endPosX - 2, self.endPosY - 2, 4, 4)
+
+    def updatePosition(self):
+        self.rect = pygame.Rect(self.currentPosX - 10, self.currentPosY - 10, 20, 20)
+        if self.rect.colliderect(self.targetDestinationRect):
+            self.stageOfPath += 1
+            self.targetDestination()
+        self.currentPosX += math.cos(math.atan(self.gradient))*self.speed*self.direction
+        self.currentPosY += math.sin(math.atan(self.gradient))*self.speed*self.direction
+
+
         self.healthRectRed = pygame.Rect(self.currentPosX - 10 + self.health / 5, self.currentPosY - 15, (100 - self.health) / 5, 3)
         self.healthRectGreen = pygame.Rect(self.currentPosX - 10, self.currentPosY - 15, self.health / 5, 3)
-        self.rect = pygame.Rect(self.currentPosX - 10, self.currentPosY - 10, 20, 20)
+
+        self.drawCreep()
+
+
+
+    def updatePath(self, newPath):
+        self.path = newPath
+
+    def drawCreep(self):
         pygame.draw.rect(screen, blue, self.rect)
         pygame.draw.rect(screen, red, self.healthRectRed)
         pygame.draw.rect(screen, green, self.healthRectGreen)
@@ -125,7 +152,7 @@ while running:
 
     screen.fill((black))
     for creep in creeps:
-        creep.update()
+        creep.updatePosition()
 
     for tower in towers:
         tower.update()
