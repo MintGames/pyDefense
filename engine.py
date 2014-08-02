@@ -6,6 +6,7 @@ Make creeps travel with A* algorithm
 
 import pygame
 import math
+import random
 pygame.init()
 
 size = width, height = 700, 900
@@ -32,8 +33,8 @@ class Creep:
         self.rect = pygame.Rect(self.startPosX, self.startPosY, self.endPosX, self.endPosY)
         self.health = 100
         self.stageOfPath = 0
-        self.path = [(500,600), (400,100), (200,100), (60, 800), (700, 90)]
-        self.speed = 1
+        self.path = [(500,600), (400,100), (200,100), (60, 800), (700, 90), (500,600), (400,100), (200,100), (60, 800), (700, 90), (500,600), (400,100), (200,100), (60, 800), (700, 90)]
+        self.speed = 3
         self.targetDestination()
 
     def attacked(self, damage):
@@ -135,13 +136,13 @@ class Bullet:
 tower1 = Tower(screen, red, 100, 100, 25, 25)
 tower2 = Tower(screen, red, 600, 600, 25, 25)
 towers = [tower1, tower2]
-creep1 = Creep(screen, blue, (0, 350), (0, 350))
-creep2 = Creep(screen, blue, (0, 400), (0, 400))
-creep3 = Creep(screen, blue, (0, 450), (0, 450))
-creeps = [creep1, creep2, creep3]
+creeps = []
 clock = pygame.time.Clock()
 
 while running:
+    while len(creeps) < 10:
+        creep = Creep(screen, blue, (0, random.randint(0,height)), (0, 350))
+        creeps.append(creep)
     clock.tick(60)
     event = pygame.event.poll()
     if event.type == pygame.QUIT:
@@ -162,7 +163,10 @@ while running:
                     creep.attacked(25)
                     if creep.health < 1:
                         creeps.remove(creep)
-                    tower.bullets.remove(bullet)
+                    try:
+                        tower.bullets.remove(bullet)
+                    except:
+                        print "eh"
 
     pygame.display.flip()
     time += 1
