@@ -24,10 +24,6 @@ green = 0, 255, 0
 time = 0
 
 
-
-
-
-
 tower1 = Tower(screen, red, 100, 100, 25, 25, width, height)
 tower2 = Tower(screen, red, 600, 600, 25, 25, width, height)
 towers = [tower1, tower2]
@@ -35,7 +31,7 @@ creeps = []
 clock = pygame.time.Clock()
 
 while running:
-    while len(creeps) < 100:
+    while len(creeps) < 5:
         creep = Creep(screen, blue, (0, random.randint(0,height)), (0, 350))
         creeps.append(creep)
     clock.tick(60)
@@ -43,8 +39,12 @@ while running:
     if event.type == pygame.QUIT:
         running = 0
     if event.type == pygame.MOUSEBUTTONUP:
-        tower1.shoot(pygame.mouse.get_pos())
-        tower2.shoot(pygame.mouse.get_pos())
+        if event.button == 3:
+            tower1.shoot(pygame.mouse.get_pos(), "homing")
+            tower2.shoot(pygame.mouse.get_pos(), "homing")
+        else:
+            tower1.shoot(pygame.mouse.get_pos(), "null")
+            tower2.shoot(pygame.mouse.get_pos(), "null")
 
     screen.fill((black))
     for creep in creeps:
@@ -52,7 +52,7 @@ while running:
         creep.drawCreep(screen)
 
     for tower in towers:
-        tower.update()
+        tower.update(creeps)
         for bullet in tower.bullets:
             for creep in creeps:
                 if bullet.rect.colliderect(creep.rect):
