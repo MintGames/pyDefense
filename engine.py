@@ -10,6 +10,9 @@ import random
 from creeps import Creep
 from towers import Tower, Bullet
 pygame.init()
+import timeit
+
+time = timeit.default_timer() 
 
 size = width, height = 700, 900
 screen = pygame.display.set_mode((size))
@@ -31,6 +34,7 @@ creeps = []
 clock = pygame.time.Clock()
 
 while running:
+    time = timeit.default_timer()
     while len(creeps) < 5:
         creep = Creep(screen, blue, (0, random.randint(0,height)), (0, 350))
         creeps.append(creep)
@@ -40,11 +44,9 @@ while running:
         running = 0
     if event.type == pygame.MOUSEBUTTONUP:
         if event.button == 3:
-            tower1.shoot(pygame.mouse.get_pos(), "homing")
-            tower2.shoot(pygame.mouse.get_pos(), "homing")
+            print "right mouse" 
         else:
-            tower1.shoot(pygame.mouse.get_pos(), "null")
-            tower2.shoot(pygame.mouse.get_pos(), "null")
+            print "mouse, but not right!"
 
     screen.fill((black))
     for creep in creeps:
@@ -52,7 +54,7 @@ while running:
         creep.drawCreep(screen)
 
     for tower in towers:
-        tower.update(creeps)
+        tower.update(creeps, time)
         for bullet in tower.bullets:
             for creep in creeps:
                 if bullet.rect.colliderect(creep.rect):
@@ -65,4 +67,5 @@ while running:
                         print "eh"
 
     pygame.display.flip()
+
     time += 1

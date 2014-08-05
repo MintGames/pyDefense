@@ -21,22 +21,27 @@ class Tower:
         self.centre = self.centreX, self.centreY
         self.rect = pygame.Rect(self.positionX, self.positionY, self.sizeX, self.sizeY)
         self.bullets = []
+        self.shootSpeed = 1
         self.screen = screen
         self.width = screenWidth
         self.height = screenHeight
+        self.lastShot = 0
 
-    def update(self, creeps):
+    def update(self, creeps, time):
         global height
         global width
+        self.time = time
         self.activeCreeps = creeps
         pygame.draw.rect(self.screen, red, self.rect)
-        print "There are bullets: " + str(len(self.bullets))
+        if self.time > self.lastShot + self.shootSpeed:
+            self.shoot((400,400), "homing") 
         for bullet in self.bullets:
             if (bullet.currentPosX > self.width) or (bullet.currentPosY > self.height) or (bullet.currentPosX < 0) or (bullet.currentPosY < 0):
                 self.bullets.remove(bullet)
             bullet.update(self.activeCreeps)
 
     def shoot(self, mousePos, special):
+        self.lastShot = self.time
         if special == "homing":
             bullet = Bullet(self.centre, mousePos, self.screen, True)
         else:
@@ -59,9 +64,7 @@ class Bullet:
         self.screen = screen
         self.homing = homing
         self.colour = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
-        print str((self.startPosY - self.endPosY)) + " Divided by " + str((self.startPosX - self.endPosX))
         self.gradient = (self.startPosY - self.endPosY) / float((self.startPosX - self.endPosX))
-        print self.gradient
         self.speed = 3
         if self.endPosX < self.startPosX:
             self.direction = -1
