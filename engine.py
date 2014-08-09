@@ -7,7 +7,7 @@ Make creeps travel with A* algorithm
 import pygame
 import math
 import random
-from creeps import Creep
+from creeps import CreepWave
 from towers import Tower, Bullet
 pygame.init()
 import timeit
@@ -25,19 +25,17 @@ blue = 0, 0, 255
 green = 0, 255, 0
 
 time = 0
+currentWave = 1
 
 
 tower1 = Tower(screen, red, 100, 100, 25, 25, width, height)
 tower2 = Tower(screen, red, 600, 600, 25, 25, width, height)
 towers = [tower1, tower2]
-creeps = []
+wave = CreepWave(screen, 'fast', currentWave)
 clock = pygame.time.Clock()
 
 while running:
     time = timeit.default_timer()
-    while len(creeps) < 5:
-        creep = Creep(screen, blue, (0, random.randint(0,height)), (0, 350))
-        creeps.append(creep)
     clock.tick(60)
     event = pygame.event.poll()
     if event.type == pygame.QUIT:
@@ -49,18 +47,20 @@ while running:
             print "mouse, but not right!"
 
     screen.fill((black))
-    for creep in creeps:
-        creep.updatePosition()
-        creep.drawCreep(screen)
+    
+    wave.updateCreeps()
+    if wave.waveOver():
+        currentWave += 1
+        wave = CreepWave(screen, 'fast', currentWave)
 
     for tower in towers:
-        tower.update(creeps, time)
+        tower.update(wave.creeps, time)
         for bullet in tower.bullets:
-            for creep in creeps:
+            for creep in wave.creeps:
                 if bullet.rect.colliderect(creep.rect):
                     creep.attacked(25)
                     if creep.health < 1:
-                        creeps.remove(creep)
+                        wave.creeps.remove(creep)
                     try:
                         tower.bullets.remove(bullet)
                     except:
