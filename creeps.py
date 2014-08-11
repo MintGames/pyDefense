@@ -10,10 +10,11 @@ green = 0, 255, 0
 
 
 class CreepWave:
-    def __init__(self, screen, typeOfWave, waveLevel):
+    def __init__(self, screen, typeOfWave, waveLevel, creepPath):
         self.screen = screen
         self.typeOfWave = typeOfWave
         self.waveLevel = waveLevel
+        self.creepPath = creepPath
         self.creeps = []
         if typeOfWave == 'fast':
             self.fastWave()
@@ -29,7 +30,7 @@ class CreepWave:
 
     def fastWave(self):
         for i in range(5):
-            creep = Creep(self.screen, blue, (0, random.randint(0,400)), (20, 20), 6, 50)
+            creep = Creep(self.screen, self.creepPath, blue, (0, random.randint(0,400)), (20, 20), 6, 50)
             self.creeps.append(creep)
 
     def tankWave(self):
@@ -50,13 +51,13 @@ class CreepWave:
             creep.drawCreep(self.screen)
 
     def waveOver(self):
-        if len(self.creeps) <= 1:
+        if len(self.creeps) == 0:
             return True
         else:
             return False
 
 class Creep:
-    def __init__(self, screen, colour, (startPosX, startPosY), (sizeX, sizeY), speed, health):
+    def __init__(self, screen, path, colour, (startPosX, startPosY), (sizeX, sizeY), speed, health):
         self.startPosX = startPosX
         self.startPosY = startPosY
         self.currentPosX = self.startPosX
@@ -65,7 +66,7 @@ class Creep:
         self.sizeX = sizeX
         self.sizeY = sizeY
         self.stageOfPath = 0
-        self.path = [(500,600), (400,100), (200,100), (60, 800), (700, 90), (500,600), (400,100), (200,100), (60, 800), (700, 90), (500,600), (400,100), (200,100), (60, 800), (700, 90)]
+        self.path = path
         self.speed = speed
         self.targetDestination()
 
